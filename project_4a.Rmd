@@ -65,7 +65,7 @@ Row
 1954 to 2019 in 10 countries around the world: Australia, Brazil, Cambodia, 
 Guinea, Ireland, Liberia, Naruru, Singapore, Trinidad and Tobago, and Uzebekistan. The line plot shows a steady global decline in Neonatal Mortality Rates over time, reflecting improvements in maternal and newborn healthcare worldwide. However, notable disparities remain between countries, with some regions experiencing much slower progress than others. This highlights the need for continued efforts to close the gap in newborn survival rates.
 
-```{r}
+```{r, fig.width=NULL, fig.height=NULL}
 p <- ggplot(neonatal_filtered, aes(x = Period, 
                           y = Rate, 
                           color = Location, 
@@ -83,7 +83,8 @@ p <- ggplot(neonatal_filtered, aes(x = Period,
   theme_minimal()
 
 # Convert to plotly
-ggplotly(p, tooltip = "text")
+ggplotly(p, tooltip = "text") %>%
+    layout(autosize = TRUE)
 ```
 
 Data Table
