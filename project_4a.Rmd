@@ -83,7 +83,8 @@ p <- ggplot(neonatal_filtered, aes(x = Period,
   theme_minimal()
 
 # Convert to plotly
-ggplotly(p, tooltip = "text")
+ggplotly(p, tooltip = "text") %>%
+    layout(autosize = TRUE)
 ```
 
 Data Table
