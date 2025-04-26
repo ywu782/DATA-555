@@ -12,7 +12,7 @@ countries and regions. By making complex global health data easily accessible
 and interpretable, the project supports data-driven efforts to improve maternal 
 and child health outcomes.
 
-[Click here for source code](https://ywu782.github.io/DATA-555/project_4a.Rmd)
+[Click here to download source code](https://ywu782.github.io/DATA-555/project_4a.Rmd)
 
 
 
