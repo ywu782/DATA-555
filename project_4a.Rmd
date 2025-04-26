@@ -38,7 +38,7 @@ neonatal_filtered <- neonatal %>%
   filter(Location %in% selected_countries) %>%
   mutate(Rate = as.numeric(str_extract(`First Tooltip`, "^[0-9]+\\.?[0-9]*")),
          CI = str_extract(`First Tooltip`, "\\[.*\\]")
-         )
+         ) 
 ```
 
 Description
@@ -65,7 +65,9 @@ Row
 1954 to 2019 in 10 countries around the world: Australia, Brazil, Cambodia, 
 Guinea, Ireland, Liberia, Naruru, Singapore, Trinidad and Tobago, and Uzebekistan. The line plot shows a steady global decline in Neonatal Mortality Rates over time, reflecting improvements in maternal and newborn healthcare worldwide. However, notable disparities remain between countries, with some regions experiencing much slower progress than others. This highlights the need for continued efforts to close the gap in newborn survival rates.
 
-```{r, fig.width=NULL, fig.height=NULL}
+```{r}
+neonatal_filtered$Period <- as.numeric(as.character(neonatal_filtered$Period))
+
 p <- ggplot(neonatal_filtered, aes(x = Period, 
                           y = Rate, 
                           color = Location, 
@@ -84,8 +86,51 @@ p <- ggplot(neonatal_filtered, aes(x = Period,
 
 # Convert to plotly
 ggplotly(p, tooltip = "text") %>%
-    layout(autosize = TRUE)
+  layout(
+    height = 600,
+    xaxis = list(
+      tickangle = -45,
+      tickmode = "auto",
+      nticks = 10
+    )
+  )
 ```
+
+### Line plot Comparing Neonatal Mortality Rates in 10 Countries over years (Plotly) {.mobile}
+**KEY TAKEAWAYs:** This interactive line plot shows the trends in neonatal mortality rates from 
+1954 to 2019 in 10 countries around the world: Australia, Brazil, Cambodia, 
+Guinea, Ireland, Liberia, Naruru, Singapore, Trinidad and Tobago, and Uzebekistan. The line plot shows a steady global decline in Neonatal Mortality Rates over time, reflecting improvements in maternal and newborn healthcare worldwide. However, notable disparities remain between countries, with some regions experiencing much slower progress than others. This highlights the need for continued efforts to close the gap in newborn survival rates.
+
+```{r}
+neonatal_filtered$Period <- as.numeric(as.character(neonatal_filtered$Period))
+
+p <- ggplot(neonatal_filtered, aes(x = Period, 
+                          y = Rate, 
+                          color = Location, 
+                          group = Location,
+                          text = paste("Country:", Location,
+                                       "<br>Year:", Period,
+                                       "<br>Mortality Rate:", Rate,
+                                       "<br>Confidence Interval:", CI))) +
+    geom_line(size = 1) +
+    geom_point(size = 1.5) +
+    labs(title = "Neonatal Mortality Rate Over Time",
+         x = "Year",
+         y = "Mortality Rate per 1,000 Live Births",
+         color = "Country") +
+  theme_minimal()
+
+# Convert to plotly
+ggplotly(p, tooltip = "text") %>%
+  layout(
+    xaxis = list(
+      tickangle = -45,
+      tickmode = "auto",
+      nticks = 10
+    )
+  )
+```
+
 
 Data Table
 =======================================================================
