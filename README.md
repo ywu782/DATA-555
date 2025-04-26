@@ -4,7 +4,7 @@ Rate (NMR) using Plotly and DT packages in R. It enables users to explore patter
 and trends in neonatal mortality across different regions and time periods, 
 supporting data-driven insights into newborn health outcomes.
 
-View Flexdashboard: 
+[Click here to view it!](https://ywu782.github.io/DATA-555/project_4a.html)
 
 Real-world impacts: This dashboard provides an interactive visualization of 
 neonatal mortality rates, helping users explore patterns and disparities across 
