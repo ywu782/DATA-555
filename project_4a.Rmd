@@ -157,7 +157,7 @@ neonatal_data <- neonatal_filtered %>%
 
 neonatal_data$Year <- as.character(neonatal_data$Year)
 
-# Create interactive DataTable
+# Create interactive DataTable 
 datatable(neonatal_data, 
           options = list(
             pageLength = 10,       # Show 10 rows per page by default
