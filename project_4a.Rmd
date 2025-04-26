@@ -1,0 +1,130 @@
+---
+title: "DATA 555 Final Dashboard: Global Country-level Neonatal Mortality Rate"
+author: "Kristin Wu"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    social: menu
+    source_code: embed
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(ggplot2)
+library(plotly)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(here)
+library(stringr)
+library(DT)
+library(flexdashboard)
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+# Load the dataset
+neonatal <- read_csv(here("neonatalMortalityRate.csv"))
+
+# Clean the dataset
+# Randomly select 10 countries
+unique_countries <- unique(neonatal$Location)
+
+set.seed(125)  # Set seed for reproducibility
+selected_countries <- sample(unique_countries, 10)
+
+neonatal_filtered <- neonatal %>%
+  filter(Location %in% selected_countries) %>%
+  mutate(Rate = as.numeric(str_extract(`First Tooltip`, "^[0-9]+\\.?[0-9]*")),
+         CI = str_extract(`First Tooltip`, "\\[.*\\]")
+         )
+```
+
+Description
+=======================================================================
+**Introduction to the dashboard:** This dashboard provides an interactive visualization of the Neonatal Mortality Rate (NMR) using Plotly and DT packages in R. It enables users to explore patternsand trends in neonatal mortality across different regions and time periods, supporting data-driven insights into newborn health outcomes. This dashboard contains two interactive visualizations of the dataset in the next two tabs. Follow link to GitHub repository to learn more about the project: https://github.com/ywu782/DATA-555
+
+**Dataset decription:** This dataset is an adaptation of WHO NMR data in 2020 that covers nearly all countries worldwide, drawing from a large, comprehensive dataset rather than a fixed sample size. Data are collected through national civil registration and vital statistics systems, household surveys, and statistical modeling where direct data are incomplete. The study population includes live births and neonatal deaths (deaths within the first 28 days of life) across countries. Collection methods and updates are coordinated through WHO and UNICEF’s Inter-agency Group for Child Mortality Estimation. The original dataset is publicly available on Kaggle: https://www.kaggle.com/datasets/utkarshxy/who-worldhealth-statistics-2020-complete
+
+
+**Real-world impacts:** This dashboard provides an interactive visualization of 
+neonatal mortality rates, helping users explore patterns and disparities across 
+countries and regions. By making complex global health data easily accessible 
+and interpretable, the project supports data-driven efforts to improve maternal 
+and child health outcomes.
+
+Interactive Line plot
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Line plot Comparing Neonatal Mortality Rates in 10 Countries over years (Plotly)
+**KEY TAKEAWAYs:** This interactive line plot shows the trends in neonatal mortality rates from 
+1954 to 2019 in 10 countries around the world: Australia, Brazil, Cambodia, 
+Guinea, Ireland, Liberia, Naruru, Singapore, Trinidad and Tobago, and Uzebekistan. The line plot shows a steady global decline in Neonatal Mortality Rates over time, reflecting improvements in maternal and newborn healthcare worldwide. However, notable disparities remain between countries, with some regions experiencing much slower progress than others. This highlights the need for continued efforts to close the gap in newborn survival rates.
+
+```{r}
+p <- ggplot(neonatal_filtered, aes(x = Period, 
+                          y = Rate, 
+                          color = Location, 
+                          group = Location,
+                          text = paste("Country:", Location,
+                                       "<br>Year:", Period,
+                                       "<br>Mortality Rate:", Rate,
+                                       "<br>Confidence Interval:", CI))) +
+    geom_line(size = 1) +
+    geom_point(size = 1.5) +
+    labs(title = "Neonatal Mortality Rate Over Time",
+         x = "Year",
+         y = "Mortality Rate per 1,000 Live Births",
+         color = "Country") +
+  theme_minimal()
+
+# Convert to plotly
+ggplotly(p, tooltip = "text")
+```
+
+Data Table
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### An Interative Data Table Created from DT()
+**KEY TAKEAWAYs:** This interactive table further specifies the values in the above graph. In this
+table, we can use the filtering and sorting functions to view the mortality data
+in ways of interest. For instance, when filtering on a specific year, we can sort
+the countries in the order of mortality rate. It highlights significant variation across countries, with some regions showing consistently higher rates compared to others. This table allows users to easily identify countries with the highest and lowest neonatal mortality and track changes over time.
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+# Select relevant columns for the table
+neonatal_data <- neonatal_filtered %>%
+  mutate(CI = str_replace_all(CI, "\\[|\\]", "")) %>%  
+  separate(CI, into = c("Lower", "Upper"), sep = "-", convert = TRUE) %>%
+  select(Country = Location,
+         Year = Period,
+         `Neonatal Mortality Rate` = Rate, 
+         `Confidence Interval: Lower Bound` = Lower,
+         `Confidence Interval: Upper Bound` = Upper)
+
+neonatal_data$Year <- as.character(neonatal_data$Year)
+
+# Create interactive DataTable
+datatable(neonatal_data, 
+          options = list(
+            pageLength = 10,       # Show 10 rows per page by default
+            autoWidth = TRUE,      # Auto adjust column width
+            searching = TRUE,      # Enable search box
+            dom = 'Blfrtip',       # Show filter dropdowns
+            columnDefs = list(
+              list(className = 'dt-center', targets = c(1, 2, 3, 4)), 
+              list(orderable = TRUE, targets = '_all')  # Make all columns sortable
+            )
+          ),
+          rownames = FALSE,        # Hide row numbers
+          filter = "top"           # Add column filters
+)
+```
+
