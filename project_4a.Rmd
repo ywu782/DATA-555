@@ -93,7 +93,7 @@ Data Table
 Row
 -----------------------------------------------------------------------
 
-### An Interative Data Table Created from DT()
+### An Interactive Data Table Created from DT()
 **KEY TAKEAWAYs:** This interactive table further specifies the values in the above graph. In this
 table, we can use the filtering and sorting functions to view the mortality data
 in ways of interest. For instance, when filtering on a specific year, we can sort
